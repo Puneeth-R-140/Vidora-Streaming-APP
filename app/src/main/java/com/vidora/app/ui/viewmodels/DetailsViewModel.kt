@@ -57,9 +57,15 @@ class DetailsViewModel @Inject constructor(
     fun loadEpisodes(id: String, season: Int) {
         viewModelScope.launch {
             repository.getEpisodes(id, season)
-                .catch { /* handle error */ }
+                .catch { e -> 
+                    _uiState.emit(_uiState.value.copy(error = "Failed to load episodes: ${e.message}"))
+                }
                 .collect { episodes ->
-                    _uiState.emit(_uiState.value.copy(episodes = episodes, currentSeason = season))
+                    _uiState.emit(_uiState.value.copy(
+                        episodes = episodes, 
+                        currentSeason = season,
+                        error = null
+                    ))
                 }
         }
     }

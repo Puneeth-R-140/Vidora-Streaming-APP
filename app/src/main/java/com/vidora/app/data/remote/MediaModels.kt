@@ -24,11 +24,19 @@ data class MediaItem(
     @SerializedName("genres") val genres: List<Genre>?,
     @SerializedName("credits") val credits: Credits?,
     @SerializedName("similar") val similar: TmdbResponse<MediaItem>?,
-    @SerializedName("number_of_seasons") val numberOfSeasons: Int?
+    @SerializedName("number_of_seasons") val numberOfSeasons: Int?,
+    @SerializedName("seasons") val seasons: List<Season>?
 ) {
     val displayTitle: String get() = title ?: name ?: "Unknown"
     val realMediaType: String get() = mediaType ?: if (title != null) "movie" else "tv"
+    val totalSeasons: Int get() = numberOfSeasons ?: seasons?.size ?: 1
 }
+
+data class Season(
+    @SerializedName("id") val id: Int,
+    @SerializedName("season_number") val seasonNumber: Int,
+    @SerializedName("episode_count") val episodeCount: Int?
+)
 
 data class Genre(
     @SerializedName("id") val id: Int,

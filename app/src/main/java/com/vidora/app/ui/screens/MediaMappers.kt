@@ -20,7 +20,8 @@ fun FavoriteEntity.toMediaItem(): MediaItem {
         genres = null,
         credits = null,
         similar = null,
-        numberOfSeasons = null
+        numberOfSeasons = null,
+        seasons = null
     )
 }
 
@@ -40,6 +41,7 @@ fun HistoryEntity.toMediaItem(): MediaItem {
         genres = null,
         credits = null,
         similar = null,
-        numberOfSeasons = null
+        numberOfSeasons = null,
+        seasons = null
     )
 }

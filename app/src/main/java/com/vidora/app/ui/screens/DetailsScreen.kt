@@ -119,9 +119,8 @@ fun DetailsScreen(
                         color = Color.LightGray
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    if (media.realMediaType == "tv" && uiState.episodes.isNotEmpty()) {
+                    if (media.realMediaType == "tv") {
+                        Spacer(modifier = Modifier.height(24.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -134,7 +133,7 @@ fun DetailsScreen(
                                 color = MaterialTheme.colorScheme.primary
                             )
                             
-                            val totalSeasons = media.numberOfSeasons ?: 1
+                            val totalSeasons = media.totalSeasons
                             if (totalSeasons > 1) {
                                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     items((1..totalSeasons).toList()) { seasonNum ->
@@ -150,10 +149,19 @@ fun DetailsScreen(
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        uiState.episodes.forEach { episode ->
-                            EpisodeItem(episode = episode) {
-                                viewModel.markWatched(media, episode.seasonNumber, episode.episodeNumber)
-                                onWatchClick(media.id, "tv/${episode.seasonNumber}/${episode.episodeNumber}")
+                        if (uiState.episodes.isEmpty()) {
+                            Text(
+                                text = "Loading episodes...",
+                                color = Color.Gray,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        } else {
+                            uiState.episodes.forEach { episode ->
+                                EpisodeItem(episode = episode) {
+                                    viewModel.markWatched(media, episode.seasonNumber, episode.episodeNumber)
+                                    onWatchClick(media.id, "tv/${episode.seasonNumber}/${episode.episodeNumber}")
+                                }
                             }
                         }
                     }

@@ -41,4 +41,4 @@ No software is perfect, and if you are looking for a bug-free utopia, you are in
 5. Profit.
 
 ---
-*Built by a human, for humans. Stay Chad.*
+*Built by a human, for humans. Stay Goated.*
