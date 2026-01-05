@@ -1,92 +1,32 @@
-# Contributing to Pocket Nexus
+# Contributing
 
-Thank you for your interest in contributing to this project. This document provides guidelines for contributing.
+Thanks for checking this out. Here's how you can contribute:
 
-## Code of Conduct
+## Found a bug?
 
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Help maintain a welcoming environment
+Open an issue with:
+- What you expected to happen
+- What actually happened
+- Steps to reproduce
+- Your device and Android version
 
-## How to Contribute
+## Want to add a feature?
 
-### Reporting Bugs
+Cool! Open an issue first so we can discuss it. Then:
 
-1. Check if the bug has already been reported in the Issues section
-2. If not, create a new issue with:
-   - Clear title and description
-   - Steps to reproduce the issue
-   - Expected behavior vs actual behavior
-   - Screenshots if applicable
-   - Device information and Android version
+1. Fork the repo
+2. Create a branch (`git checkout -b cool-feature`)
+3. Make your changes
+4. Test it properly
+5. Commit (`git commit -m "added cool feature"`)
+6. Push and create a PR
 
-### Suggesting Features
+## Code style
 
-1. Check existing Issues for similar feature requests
-2. Create a new issue describing:
-   - Clear description of the feature
-   - Use cases and benefits
-   - Possible implementation approach
-
-### Pull Requests
-
-1. Fork the repository
-2. Create a branch for your feature:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. Make your changes following the code style guidelines
-4. Test thoroughly on multiple devices
-5. Commit with clear messages:
-   ```bash
-   git commit -m "Add: feature description"
-   ```
-6. Push to your fork:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-7. Create a Pull Request with:
-   - Description of changes
-   - Related issue number if applicable
-   - Screenshots or videos of UI changes
-
-## Code Style
-
-### Kotlin
-- Follow Kotlin coding conventions
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Keep functions small and focused
-
-### Compose
-- Use `remember` and `LaunchedEffect` appropriately
-- Avoid side effects in composables
-- Extract reusable components
-- Follow Material 3 guidelines
-
-### Commits
-- Use present tense ("Add feature" not "Added feature")
-- Keep commits focused and atomic
-- Reference issues when applicable
-
-## Development Setup
-
-1. Clone the repository
-2. Open in Android Studio
-3. Sync Gradle dependencies
-4. Run on emulator or physical device
+Just follow the existing code style. Keep it clean and readable.
 
 ## Testing
 
-- Test on multiple Android versions (API 24 and above)
-- Test on different screen sizes
-- Verify dark mode compatibility
-- Check for memory leaks
+Test on a few different devices if you can. Make sure it works on both old and new Android versions.
 
-## Questions
-
-Feel free to open an issue if you have any questions or need clarification on anything.
-
----
-
-Thank you for contributing to Pocket Nexus
+That's it. Thanks for contributing!

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "VidoraApp"
+rootProject.name = "PocketNexusApp"
 include(":app")

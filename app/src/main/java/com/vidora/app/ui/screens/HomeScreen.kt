@@ -2,6 +2,7 @@ package com.vidora.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,13 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.vidora.app.data.local.FavoriteEntity
 import com.vidora.app.data.local.HistoryEntity
 import com.vidora.app.data.remote.MediaItem
 import com.vidora.app.ui.viewmodels.HomeViewModel
+import com.vidora.app.ui.components.ErrorStateView
+import com.vidora.app.ui.components.ShimmerCard
+import com.vidora.app.ui.components.EmptyStateView
+import com.vidora.app.ui.components.MediaCard
+import com.vidora.app.ui.components.shimmerEffect
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
@@ -34,7 +38,12 @@ fun HomeScreen(
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (uiState.isLoading && uiState.trendingMovies.isEmpty()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            ShimmerHomeScreen(onSearchClick)
+        } else if (uiState.error != null && uiState.trendingMovies.isEmpty()) {
+            ErrorStateView(
+                message = uiState.error ?: "Unknown error",
+                onRetry = { viewModel.retry() }
+            )
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item { 
@@ -80,14 +89,62 @@ fun HomeScreen(
                         )
                     }
                 }
+                
+                if (uiState.trendingMovies.isEmpty() && uiState.popularShows.isEmpty() && !uiState.isLoading) {
+                    item {
+                        EmptyStateView(message = "No content available right now.")
+                    }
+                }
 
                 if (uiState.error != null) {
                     item {
-                        Text(
-                            text = "Error: ${uiState.error}",
-                            color = Color.Red,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Surface(
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.errorContainer,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = uiState.error ?: "",
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                TextButton(onClick = { viewModel.retry() }) {
+                                    Text("Retry")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShimmerHomeScreen(onSearchClick: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        HeaderSection(onSearchClick = onSearchClick)
+        
+        repeat(3) {
+            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .width(150.dp)
+                        .height(24.dp)
+                        .shimmerEffect()
+                )
+                
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    repeat(3) {
+                        ShimmerCard()
                     }
                 }
             }
@@ -104,7 +161,7 @@ fun HeaderSection(onSearchClick: () -> Unit) {
     ) {
         Column {
             Text(
-                text = "Vidora",
+                text = "PN",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -151,29 +208,4 @@ fun MediaSection(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MediaCard(item: MediaItem, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.width(140.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Column {
-            AsyncImage(
-                model = "https://image.tmdb.org/t/p/w500${item.posterPath}",
-                contentDescription = item.displayTitle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = item.displayTitle,
-                fontSize = 12.sp,
-                maxLines = 1,
-                modifier = Modifier.padding(8.dp)
-            )
-        }
-    }
-}
+

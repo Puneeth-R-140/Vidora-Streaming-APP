@@ -6,6 +6,7 @@ import com.vidora.app.data.local.FavoriteEntity
 import com.vidora.app.data.local.HistoryEntity
 import com.vidora.app.data.remote.MediaItem
 import com.vidora.app.data.repository.MediaRepository
+import com.vidora.app.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ data class HomeUiState(
     val favorites: List<com.vidora.app.data.local.FavoriteEntity> = emptyList(),
     val history: List<com.vidora.app.data.local.HistoryEntity> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val canRetry: Boolean = false
 )
 
 @HiltViewModel
@@ -48,25 +50,58 @@ class HomeViewModel @Inject constructor(
 
     fun loadHomeContent() {
         viewModelScope.launch {
-            _uiState.emit(_uiState.value.copy(isLoading = true, error = null))
+            _uiState.update { it.copy(isLoading = true, error = null, canRetry = false) }
             
-            try {
-                // Fetch both trending and popular concurrently? For simplicity now, sequential
-                repository.getTrendingMovies()
-                    .catch { e -> _uiState.emit(_uiState.value.copy(error = e.message)) }
-                    .collect { movies ->
-                        _uiState.emit(_uiState.value.copy(trendingMovies = movies))
-                        
-                        repository.getTrendingTVShows()
-                            .catch { e -> _uiState.emit(_uiState.value.copy(error = e.message)) }
-                            .collect { shows ->
-                                _uiState.emit(_uiState.value.copy(popularShows = shows, isLoading = false))
-                            }
+            // Collect movies
+            repository.getTrendingMovies().collect { result ->
+                when (result) {
+                    is NetworkResult.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
                     }
-            } catch (e: Exception) {
-                _uiState.emit(_uiState.value.copy(isLoading = false, error = e.message))
+                    is NetworkResult.Success -> {
+                        _uiState.update { it.copy(trendingMovies = result.data) }
+                        
+                        // Now fetch TV shows
+                        repository.getTrendingTVShows().collect { tvResult ->
+                            when (tvResult) {
+                                is NetworkResult.Success -> {
+                                    _uiState.update { 
+                                        it.copy(
+                                            popularShows = tvResult.data,
+                                            isLoading = false,
+                                            error = null
+                                        )
+                                    }
+                                }
+                                is NetworkResult.Error -> {
+                                    _uiState.update { 
+                                        it.copy(
+                                            isLoading = false,
+                                            error = tvResult.message,
+                                            canRetry = true
+                                        )
+                                    }
+                                }
+                                is NetworkResult.Loading -> {}
+                            }
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        _uiState.update { 
+                            it.copy(
+                                isLoading = false,
+                                error = result.message,
+                                canRetry = true
+                            )
+                        }
+                    }
+                }
             }
         }
+    }
+    
+    fun retry() {
+        loadHomeContent()
     }
 }
 

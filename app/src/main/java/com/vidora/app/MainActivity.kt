@@ -26,11 +26,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        // Simplistic PiP trigger - in a real app check if video is playing
-        enterPictureInPictureMode(android.app.PictureInPictureParams.Builder().build())
-    }
+    // PiP disabled - was causing playback when screen off
+    // override fun onUserLeaveHint() {
+    //     super.onUserLeaveHint()
+    //     enterPictureInPictureMode(android.app.PictureInPictureParams.Builder().build())
+    // }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,24 +73,47 @@ class MainActivity : ComponentActivity() {
                             val viewModel: DetailsViewModel = hiltViewModel()
                             DetailsScreen(
                                 viewModel = viewModel,
-                                onWatchClick = { id, subPath ->
-                                    val finalUrl = when {
-                                        subPath == "tv" -> "https://watch.vidora.su/watch/tv/$id/1/1"
-                                        subPath.startsWith("tv/") -> "https://watch.vidora.su/watch/tv/$id/${subPath.substringAfter("tv/")}"
-                                        else -> "https://watch.vidora.su/watch/movie/$id"
-                                    }
-                                    navController.navigate("player/${java.net.URLEncoder.encode(finalUrl, "UTF-8")}")
+                                onWatchClick = { mediaId, mediaType, url ->
+                                    navController.navigate("player/$mediaId/$mediaType/${java.net.URLEncoder.encode(url, "UTF-8")}")
                                 }
                             )
                         }
                         
                         composable(
-                            "player/{url}",
-                            arguments = listOf(navArgument("url") { type = NavType.StringType })
+                            "player/{mediaId}/{mediaType}/{url}",
+                            arguments = listOf(
+                                navArgument("mediaId") { type = NavType.StringType },
+                                navArgument("mediaType") { type = NavType.StringType },
+                                navArgument("url") { type = NavType.StringType }
+                            )
                         ) { backStackEntry ->
+                            val mediaId = backStackEntry.arguments?.getString("mediaId") ?: ""
+                            val mediaType = backStackEntry.arguments?.getString("mediaType") ?: ""
                             val url = backStackEntry.arguments?.getString("url") ?: ""
-                            VideoPlayerWebView(
-                                url = java.net.URLDecoder.decode(url, "UTF-8"),
+                            
+                            // Create minimal media object for player
+                            val media = com.vidora.app.data.remote.MediaItem(
+                                id = mediaId,
+                                title = if (mediaType == "movie") "Loading..." else null,
+                                name = if (mediaType == "tv") "Loading..." else null,
+                                overview = null,
+                                posterPath = null,
+                                backdropPath = null,
+                                voteAverage = 0.0,
+                                releaseDate = null,
+                                firstAirDate = null,
+                                mediaType = mediaType,
+                                popularity = null,
+                                genres = null,
+                                credits = null,
+                                similar = null,
+                                numberOfSeasons = null,
+                                seasons = null
+                            )
+                            
+                            com.vidora.app.player.NativePlayerScreen(
+                                media = media,
+                                playerUrl = java.net.URLDecoder.decode(url, "UTF-8"),
                                 onBack = { navController.popBackStack() }
                             )
                         }

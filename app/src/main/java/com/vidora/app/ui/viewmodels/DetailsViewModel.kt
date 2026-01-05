@@ -1,14 +1,16 @@
 package com.vidora.app.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vidora.app.data.remote.MediaItem
 import com.vidora.app.data.repository.MediaRepository
+import com.vidora.app.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +20,8 @@ data class DetailsUiState(
     val currentSeason: Int = 1,
     val isFavorite: Boolean = false,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val canRetry: Boolean = false
 )
 
 @HiltViewModel
@@ -40,33 +43,75 @@ class DetailsViewModel @Inject constructor(
 
     private fun loadDetails(type: String, id: String) {
         viewModelScope.launch {
-            _uiState.emit(DetailsUiState(isLoading = true))
-            
-            repository.getDetails(type, id)
-                .catch { e -> _uiState.emit(DetailsUiState(error = e.message)) }
-                .collect { details ->
-                    val isFav = repository.isFavorite(id)
-                    _uiState.emit(_uiState.value.copy(media = details, isFavorite = isFav, isLoading = false))
-                    if (type == "tv") {
-                        loadEpisodes(id, 1)
+            repository.getDetails(type, id).collect { result ->
+                when (result) {
+                    is NetworkResult.Loading -> {
+                        _uiState.update { it.copy(isLoading = true, error = null, canRetry = false) }
+                    }
+                    is NetworkResult.Success -> {
+                        val isFav = repository.isFavorite(id)
+                        _uiState.update { 
+                            it.copy(
+                                media = result.data, 
+                                isFavorite = isFav, 
+                                isLoading = false,
+                                error = null
+                            ) 
+                        }
+                        if (type == "tv") {
+                            loadEpisodes(id, 1)
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        _uiState.update { 
+                            it.copy(
+                                isLoading = false, 
+                                error = result.message,
+                                canRetry = true
+                            ) 
+                        }
                     }
                 }
+            }
         }
     }
 
     fun loadEpisodes(id: String, season: Int) {
         viewModelScope.launch {
-            repository.getEpisodes(id, season)
-                .catch { e -> 
-                    _uiState.emit(_uiState.value.copy(error = "Failed to load episodes: ${e.message}"))
+            repository.getEpisodes(id, season).collect { result ->
+                when (result) {
+                    is NetworkResult.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
+                    is NetworkResult.Success -> {
+                        _uiState.update { 
+                            it.copy(
+                                episodes = result.data, 
+                                currentSeason = season,
+                                isLoading = false,
+                                error = null
+                            ) 
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        _uiState.update { 
+                            it.copy(
+                                isLoading = false, 
+                                error = result.message,
+                                canRetry = true
+                            ) 
+                        }
+                    }
                 }
-                .collect { episodes ->
-                    _uiState.emit(_uiState.value.copy(
-                        episodes = episodes, 
-                        currentSeason = season,
-                        error = null
-                    ))
-                }
+            }
+        }
+    }
+
+    fun retry() {
+        val mediaId = _uiState.value.media?.id
+        val mediaType = _uiState.value.media?.realMediaType ?: "movie"
+        if (mediaId != null) {
+            loadDetails(mediaType, mediaId)
         }
     }
 

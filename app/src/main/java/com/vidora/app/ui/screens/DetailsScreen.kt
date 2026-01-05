@@ -24,18 +24,27 @@ import coil.compose.AsyncImage
 import com.vidora.app.data.remote.MediaItem
 import com.vidora.app.ui.viewmodels.DetailsViewModel
 
+import com.vidora.app.ui.components.ErrorStateView
+import com.vidora.app.ui.components.ShimmerCard
+import com.vidora.app.ui.components.shimmerEffect
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     viewModel: DetailsViewModel,
-    onWatchClick: (String, String) -> Unit
+    onWatchClick: (String, String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val media = uiState.media
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        if (uiState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        if (uiState.isLoading && media == null) {
+            ShimmerDetailsScreen()
+        } else if (uiState.error != null && media == null) {
+            ErrorStateView(
+                message = uiState.error ?: "Unknown error",
+                onRetry = { viewModel.retry() }
+            )
         } else if (media != null) {
             Column(
                 modifier = Modifier
@@ -91,7 +100,11 @@ fun DetailsScreen(
                             if (media.realMediaType == "movie") {
                                 viewModel.markWatched(media)
                             }
-                            onWatchClick(media.id, media.realMediaType) 
+                            val finalUrl = when {
+                                media.realMediaType == "tv" -> "https://watch.vidora.su/watch/tv/${media.id}/1/1"
+                                else -> "https://watch.vidora.su/watch/movie/${media.id}"
+                            }
+                            onWatchClick(media.id, media.realMediaType, finalUrl)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -149,30 +162,103 @@ fun DetailsScreen(
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        if (uiState.episodes.isEmpty()) {
-                            Text(
-                                text = "Loading episodes...",
-                                color = Color.Gray,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                        if (uiState.episodes.isEmpty() && uiState.isLoading) {
+                            Column {
+                                repeat(3) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .padding(vertical = 4.dp)
+                                            .shimmerEffect()
+                                    )
+                                }
+                            }
+                        } else if (uiState.episodes.isEmpty() && uiState.error != null) {
+                            TextButton(onClick = { 
+                                media?.let { viewModel.loadEpisodes(it.id, uiState.currentSeason) }
+                            }) {
+                                Text("Click to retry loading episodes", color = MaterialTheme.colorScheme.error)
+                            }
                         } else {
                             uiState.episodes.forEach { episode ->
                                 EpisodeItem(episode = episode) {
                                     viewModel.markWatched(media, episode.seasonNumber, episode.episodeNumber)
-                                    onWatchClick(media.id, "tv/${episode.seasonNumber}/${episode.episodeNumber}")
+                                    val episodeUrl = "https://watch.vidora.su/watch/tv/${media.id}/${episode.seasonNumber}/${episode.episodeNumber}"
+                                    onWatchClick(media.id, "tv", episodeUrl)
                                 }
                             }
                         }
                     }
                 }
             }
-        } else if (uiState.error != null) {
-            Text(
-                text = "Error: ${uiState.error}",
-                color = Color.Red,
-                modifier = Modifier.align(Alignment.Center)
+        } else if (uiState.error != null && media == null) {
+            ErrorStateView(
+                message = uiState.error ?: "Unknown error",
+                onRetry = { viewModel.retry() }
             )
+        }
+    }
+}
+
+@Composable
+fun ShimmerDetailsScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .shimmerEffect()
+        )
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(32.dp)
+                    .shimmerEffect()
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(20.dp)
+                    .shimmerEffect()
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .shimmerEffect()
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            repeat(3) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f)
+                        .height(24.dp)
+                        .shimmerEffect()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .shimmerEffect()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }

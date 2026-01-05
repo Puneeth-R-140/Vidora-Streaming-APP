@@ -87,6 +87,12 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
+    // ExoPlayer for native video playback
+    val exoPlayerVersion = "2.19.1"
+    implementation("com.google.android.exoplayer:exoplayer:$exoPlayerVersion")
+    implementation("com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion")
+    implementation("com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -18,6 +18,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.vidora.app.data.remote.MediaItem
 import com.vidora.app.ui.viewmodels.SearchViewModel
+import com.vidora.app.ui.components.MediaCard
+import com.vidora.app.ui.components.shimmerEffect
+
+import com.vidora.app.ui.components.ErrorStateView
+import com.vidora.app.ui.components.ShimmerCard
+import com.vidora.app.ui.components.EmptyStateView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,10 +54,25 @@ fun SearchScreen(
             )
         )
 
-        if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        if (uiState.isLoading && uiState.results.isEmpty()) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(9) {
+                    ShimmerCard(width = 100.dp, height = 150.dp)
+                }
             }
+        } else if (uiState.error != null && uiState.results.isEmpty()) {
+            ErrorStateView(
+                message = uiState.error ?: "Search failed",
+                onRetry = { viewModel.retry() }
+            )
+        } else if (uiState.results.isEmpty() && uiState.query.length >= 2 && !uiState.isLoading) {
+            EmptyStateView(message = "No results found for \"${uiState.query}\"")
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -67,3 +88,4 @@ fun SearchScreen(
         }
     }
 }
+
