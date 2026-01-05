@@ -1,19 +1,12 @@
 # Pocket Nexus - Streaming App
 
-> [!CAUTION]
 > **LEGAL DISCLAIMER - Educational Purpose Only**
 > 
-> This application is developed for **educational and personal use only**. The developer does not own, host, or distribute any content accessible through this application. All media content is streamed from third-party sources over which the developer has no control.
+> This application is developed for educational and personal use only. The developer does not own, host, or distribute any content accessible through this application. All media content is streamed from third-party sources over which the developer has no control.
 > 
-> **Users are solely responsible for:**
-> - Ensuring their usage complies with local laws and regulations
-> - Respecting copyright and intellectual property rights
-> - Adhering to the terms of service of content providers
+> Users are solely responsible for ensuring their usage complies with local laws and regulations, respecting copyright and intellectual property rights, and adhering to the terms of service of content providers.
 > 
-> **The developer:**
-> - Does NOT endorse piracy or copyright infringement
-> - Provides this software "as is" without warranties
-> - Is NOT liable for any misuse of this application
+> The developer does NOT endorse piracy or copyright infringement, provides this software "as is" without warranties, and is NOT liable for any misuse of this application.
 
 ---
 
@@ -23,64 +16,56 @@ Pocket Nexus is a modern Android streaming application built with Jetpack Compos
 
 ## Features
 
-### 🎨 Modern UI/UX
-- **Rich black & purple theme** - Premium, eye-catching design
-- **Material 3 components** - Latest Android design guidelines
-- **Smooth animations** - Polished user experience
-- **Dark mode optimized** - Easy on the eyes
+### Modern UI/UX
+- Rich black and purple theme with premium design
+- Material 3 components following latest Android guidelines
+- Smooth animations for polished user experience
+- Dark mode optimized for comfortable viewing
 
-### 🎬 Advanced Player
-- **Custom subtitle engine** - Native SRT/VTT support with auto-discovery
-- **Gesture controls** - Double-tap to seek, long-press for 2x speed
-- **Rotation lock** - Manual orientation control (Auto/Portrait/Landscape)
-- **Quality selection** - Choose your preferred video quality
-- **Immersive mode** - Full-screen playback with hidden system bars
+### Advanced Player
+- Custom subtitle engine with native SRT/VTT support and automatic discovery
+- Gesture controls: double-tap to seek, long-press for 2x speed
+- Rotation lock with manual orientation control (Auto/Portrait/Landscape)
+- Quality selection to choose your preferred video quality
+- Immersive mode with full-screen playback and hidden system bars
 
-### 📱 Smart Features
-- **Config-based subtitle discovery** - Automatically finds available subtitles
-- **Multi-language support** - Ready for international content
-- **Lifecycle management** - Pauses playback when app is minimized
-- **Error handling** - Robust retry mechanism with clear error messages
-
-## Screenshots
-
-*Coming soon*
+### Smart Features
+- Config-based subtitle discovery that automatically finds available subtitles
+- Multi-language support ready for international content
+- Lifecycle management that pauses playback when app is minimized
+- Error handling with robust retry mechanism and clear error messages
 
 ## Installation
 
 ### Download APK
-1. Go to [Releases](../../releases)
-2. Download the latest `pocket-nexus-v1.0.0.apk`
-3. Enable "Install from Unknown Sources" in Android settings
-4. Install the APK
+1. Go to the Releases page
+2. Download the latest APK file
+3. Enable "Install from Unknown Sources" in your Android settings
+4. Install the APK on your device
 
 ### Build from Source
 
-**Prerequisites:**
+Prerequisites:
 - Android Studio Hedgehog or later
 - JDK 17 or later
 - Android SDK 34
 
-**Steps:**
+Steps:
 ```bash
-# Clone the repository
 git clone https://github.com/Puneeth-R-140/pocket-nexus-streaming.git
 cd pocket-nexus-streaming
-
-# Build debug APK
 ./gradlew assembleDebug
-
-# APK location
-app/build/outputs/apk/debug/app-debug.apk
 ```
+
+The APK will be located at: `app/build/outputs/apk/debug/app-debug.apk`
 
 ## Tech Stack
 
 - **Language:** Kotlin
-- **UI:** Jetpack Compose + Material 3
+- **UI:** Jetpack Compose with Material 3
 - **Architecture:** MVVM with Repository pattern
 - **Dependency Injection:** Hilt
-- **Networking:** Retrofit + OkHttp
+- **Networking:** Retrofit and OkHttp
 - **Database:** Room
 - **Video Player:** ExoPlayer
 - **Image Loading:** Coil
@@ -101,17 +86,17 @@ app/
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome. Please read CONTRIBUTING.md for guidelines on how to contribute to this project.
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Acknowledgments
 
-- Built with [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- Video playback powered by [ExoPlayer](https://github.com/google/ExoPlayer)
-- Icons from [Material Icons](https://fonts.google.com/icons)
+- Built with Jetpack Compose
+- Video playback powered by ExoPlayer
+- Icons from Material Icons
 
 ## Disclaimer
 
@@ -119,4 +104,4 @@ This is an educational project. The developer is not responsible for any content
 
 ---
 
-**Made with ❤️ for learning Android development**
+Made for learning Android development
