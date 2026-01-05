@@ -1,32 +1,50 @@
 # Contributing
 
-Thanks for checking this out. Here's how you can contribute:
+Thanks for wanting to help out! Here's how:
 
-## Found a bug?
+## Reporting Bugs
 
-Open an issue with:
-- What you expected to happen
+Found something broken? Open an issue and include:
+- What you were trying to do
 - What actually happened
-- Steps to reproduce
-- Your device and Android version
+- Steps to reproduce it
+- Your Android version and device model
+- Screenshots if it's a UI bug
 
-## Want to add a feature?
+## Suggesting Features
 
-Cool! Open an issue first so we can discuss it. Then:
+Got an idea? Cool! Open an issue first so we can discuss whether it makes sense and how to implement it.
+
+## Submitting Code
 
 1. Fork the repo
-2. Create a branch (`git checkout -b cool-feature`)
+2. Create a branch (`git checkout -b fix-something`)
 3. Make your changes
-4. Test it properly
-5. Commit (`git commit -m "added cool feature"`)
-6. Push and create a PR
+4. Test it on a real device if possible
+5. Commit with a simple message (`git commit -m "fixed subtitle sync issue"`)
+6. Push and open a PR
 
-## Code style
+## Code Style
 
-Just follow the existing code style. Keep it clean and readable.
+Just follow what's already there. Keep it readable and don't overcomplicate things.
 
 ## Testing
 
-Test on a few different devices if you can. Make sure it works on both old and new Android versions.
+- Test on different Android versions if you can (at least API 24+)
+- Check both portrait and landscape modes
+- Make sure gesture controls don't break player controls
+- Test with different video sources
 
-That's it. Thanks for contributing!
+## What Needs Help
+
+- Better subtitle sync detection
+- Support for more subtitle formats
+- Performance optimization
+- UI improvements
+- Bug fixes
+
+## Questions?
+
+Just open an issue if you're not sure about something.
+
+Thanks!
